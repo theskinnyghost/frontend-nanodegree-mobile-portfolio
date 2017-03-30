@@ -549,14 +549,16 @@ window.addEventListener('scroll', updatePositions);
    * @author Luca Ricci
    * Replaced querySelector with getElementById
    * Moved dom access for movingPizzas1 outside the for loop
-   * Lowered number of pizzas to show
+   * Lowered number of pizzas to show based on window.innerWidth and window.innerHeight
    */
 document.addEventListener('DOMContentLoaded', function() {
-  var cols = 8;
-  var s = 256;
-  var movingPizzas = document.getElementById("movingPizzas1");
+  var s = 256,
+      movingPizzas = document.getElementById("movingPizzas1"),
+      cols = Math.ceil(window.innerWidth / s),
+      rows = Math.ceil(window.innerHeight / s),
+      totalPizzas = cols * rows;
 
-  for (var i = 0; i < 24; i++) {
+  for (var i = 0; i < totalPizzas; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
