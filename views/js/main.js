@@ -472,8 +472,13 @@ var resizePizzas = function(size) {
 window.performance.mark("mark_start_generating"); // collect timing data
 
 // This for-loop actually creates and appends all of the pizzas when the page loads
+/**
+ *
+ * @author Luca Ricci
+ * Moved randomPizzas dom access outside the for loop
+ */
+var pizzasDiv = document.getElementById("randomPizzas");
 for (var i = 2; i < 100; i++) {
-  var pizzasDiv = document.getElementById("randomPizzas");
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
@@ -506,16 +511,23 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
    * @author Luca Ricci
    * Replaced querySelectorAll with getElementsByClassName
    * Moved curYPosition dom access outside the for loop
+   * Calculate phases with a for loop as there are only 5 different values due to the mod 5 operator
    */
+var items = document.getElementsByClassName('mover');
+
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
-  var items = document.getElementsByClassName('mover');
-  var curYPosition = document.body.scrollTop / 1250;
-  for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin(curYPosition + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+  var curYPosition = document.body.scrollTop / 1250,
+      phase = [];
+
+  for( var i = 0; i < 5; i++ ) {
+    phase.push( Math.sin( curYPosition + i ) * 100 );
+  }
+
+  for (var i = 0, count = items.length; i < count; i++) {
+    items[i].style.left = items[i].basicLeft + phase[i%5] + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -537,13 +549,14 @@ window.addEventListener('scroll', updatePositions);
    * @author Luca Ricci
    * Replaced querySelector with getElementById
    * Moved dom access for movingPizzas1 outside the for loop
+   * Lowered number of pizzas to show
    */
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
   var movingPizzas = document.getElementById("movingPizzas1");
 
-  for (var i = 0; i < 200; i++) {
+  for (var i = 0; i < 24; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
