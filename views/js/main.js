@@ -512,6 +512,7 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
    * Replaced querySelectorAll with getElementsByClassName
    * Moved curYPosition dom access outside the for loop
    * Calculate phases with a for loop as there are only 5 different values due to the mod 5 operator
+   * Use TranslateX instead of left
    */
 var items = document.getElementsByClassName('mover');
 
@@ -527,7 +528,8 @@ function updatePositions() {
   }
 
   for (var i = 0, count = items.length; i < count; i++) {
-    items[i].style.left = items[i].basicLeft + phase[i%5] + 'px';
+    var l = items[i].basicLeft + phase[i%5];
+    items[i].style.transform = 'translateX(' + l + 'px)';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -541,16 +543,24 @@ function updatePositions() {
 }
 
 // runs updatePositions on scroll
-window.addEventListener('scroll', updatePositions);
+/**
+ *
+ * @author Luca Ricci
+ * Use requestAnimationFrame to improve performances
+ */
+window.addEventListener('scroll', function(){
+  window.requestAnimationFrame(updatePositions);
+});
 
 // Generates the sliding pizzas when the page loads.
 /**
-   *
-   * @author Luca Ricci
-   * Replaced querySelector with getElementById
-   * Moved dom access for movingPizzas1 outside the for loop
-   * Lowered number of pizzas to show based on window.innerWidth and window.innerHeight
-   */
+ *
+ * @author Luca Ricci
+ * Replaced querySelector with getElementById
+ * Moved dom access for movingPizzas1 outside the for loop
+ * Lowered number of pizzas to show based on window.innerWidth and window.innerHeight
+ * Use requestAnimationFrame to improve performances
+ */
 document.addEventListener('DOMContentLoaded', function() {
   var s = 256,
       movingPizzas = document.getElementById("movingPizzas1"),
@@ -568,5 +578,5 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     movingPizzas.appendChild(elem);
   }
-  updatePositions();
+  window.requestAnimationFrame(updatePositions);
 });
